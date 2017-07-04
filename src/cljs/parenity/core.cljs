@@ -7,8 +7,12 @@
 ;; Views
 
 (defn home-page []
-  [:div [:h2 "Welcome to parenity"]
-   [:div [:a {:href "/about"} "go to about page"]]])
+  [:div {:style {:display "flex" :align-items "center"}}
+   [:span {:style {:font-size 30}} "("]
+   [:form.mui-form--inline
+     [:div.mui-textfield [:input {:type "text"}]]]
+   [:button.ui.huge.circular.icon.button [:i.icon.plus]]
+   [:span {:style {:font-size 30}} ")"]])
 
 (defn about-page []
   [:div [:h2 "About parenity"]
