@@ -1,14 +1,16 @@
 (ns parenity.core
     (:require [reagent.core :as reagent :refer [atom]]
               [secretary.core :as secretary :include-macros true]
-              [accountant.core :as accountant]))
+              [accountant.core :as accountant]
+              [clojure.pprint :as pprint]
+              [clojure.core.reducers :as reducers]))
 
 (def exprs
   (atom
     '(label equal (lambda (x y) (cond))
         ((atom x) (cond ((atom y) (eq x y)) ((quote t) (quote f))))
         ((equal (car x) (car y)) (equal (cdr x) (cdr y)))
-        ((quotet)(quotef))))))
+        ((quote t)(quote f)))))
 
 ;; -------------------------
 ;; Views
@@ -29,15 +31,18 @@
    :else [atm i children])])
 
 
+(defn editor [text]
+   [:pre text])
 
-(defn editor [exprs]
-  [:div
-   [:p (str exprs)]])
 
+(defn add-pluses [expr]
+  (if (list? expr)
+    (concat (map add-pluses expr) '(+))
+    expr))
 
 
 (defn home-page []
-  [s-expr 0 @exprs])
+  [editor (pprint/write (add-pluses @exprs) :stream nil)])
 
 (defn about-page []
   [:div [:h2 "About parenity"]
