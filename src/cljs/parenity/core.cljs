@@ -3,7 +3,12 @@
               [secretary.core :as secretary :include-macros true]
               [accountant.core :as accountant]))
 
-(def exprs (atom '(a b c)))
+(def exprs
+  (atom
+    '(label equal (lambda (x y) (cond))
+        ((atom x) (cond ((atom y) (eq x y)) ((quote t) (quote f))))
+        ((equal (car x) (car y)) (equal (cdr x) (cdr y)))
+        ((quotet)(quotef))))))
 
 ;; -------------------------
 ;; Views
@@ -12,13 +17,18 @@
   [:button.ui.button.basic.huge text])
 
 
-(defn s-expr [children]
-  [:div.s-expr
-   [:span "("]
-   [:div.ui.buttons
-     (map-indexed atm children)
-     [:button.ui.huge.basic.circular.icon.button [:i.icon.plus]]]
-   [:span ")"]])
+(defn s-expr [i children]
+ [:div
+  (cond
+   (list? children)
+   [:div.s-expr
+    [:span "("]
+    [:div.ui.basic.buttons
+      (map-indexed s-expr children)]
+    [:span ")"]]
+   :else [atm i children])])
+
+
 
 (defn editor [exprs]
   [:div
@@ -27,7 +37,7 @@
 
 
 (defn home-page []
-  [s-expr @exprs])
+  [s-expr 0 @exprs])
 
 (defn about-page []
   [:div [:h2 "About parenity"]
