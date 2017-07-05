@@ -3,16 +3,31 @@
               [secretary.core :as secretary :include-macros true]
               [accountant.core :as accountant]))
 
+(def exprs (atom '(a b c)))
+
 ;; -------------------------
 ;; Views
 
+(defn atm [i text]
+  [:button.ui.button.basic.huge text])
+
+
+(defn s-expr [children]
+  [:div.s-expr
+   [:span "("]
+   [:div.ui.buttons
+     (map-indexed atm children)
+     [:button.ui.huge.basic.circular.icon.button [:i.icon.plus]]]
+   [:span ")"]])
+
+(defn editor [exprs]
+  [:div
+   [:p (str exprs)]])
+
+
+
 (defn home-page []
-  [:div {:style {:display "flex" :align-items "center"}}
-   [:span {:style {:font-size 30}} "("]
-   [:form.mui-form--inline
-     [:div.mui-textfield [:input {:type "text"}]]]
-   [:button.ui.huge.circular.icon.button [:i.icon.plus]]
-   [:span {:style {:font-size 30}} ")"]])
+  [s-expr @exprs])
 
 (defn about-page []
   [:div [:h2 "About parenity"]

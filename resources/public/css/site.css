@@ -4,3 +4,19 @@
 body {
   padding: 10px;
 }
+
+.s-expr {
+  display: flex;
+  align-items: center;
+  font-size: 30px;
+}
+
+.atom {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.atom:hover {
+  cursor: pointer;
+  background: cyan;
+}
