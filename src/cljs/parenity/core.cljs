@@ -3,6 +3,7 @@
               [secretary.core :as secretary :include-macros true]
               [accountant.core :as accountant]
               [clojure.pprint :as pprint]
+              [clojure.string :as string]
               [clojure.core.reducers :as reducers]))
 
 (def exprs
@@ -14,6 +15,12 @@
 
 ;; -------------------------
 ;; Views
+
+
+(defn tile [c]
+  (if (= c " ")
+    [:span.tile.space "_"]
+    [:span.tile c]))
 
 (defn atm [i text]
   [:button.ui.button.basic.huge text])
@@ -30,10 +37,28 @@
     [:span ")"]]
    :else [atm i children])])
 
+(defn tokenize [text]
+  (reverse
+    (reduce
+      (fn [accum c]
+        (let [s (str c)]
+          (case s
+            (")" "(" " ") (cons s accum)
+            (let [prev (first accum)]
+              (case prev
+                (")" "(" " ") (cons s accum)
+                (cons (string/join [prev s])(rest accum)))))))
+      '()
+      text)))
+
+(defn line [text]
+  [:div.line
+    (map tile (tokenize text))])
+
 
 (defn editor [text]
-   [:pre text])
-
+  (let [lines (string/split-lines text)]
+    [:div (map line lines)]))
 
 (defn add-pluses [expr]
   (if (list? expr)
@@ -42,7 +67,7 @@
 
 
 (defn home-page []
-  [editor (pprint/write (add-pluses @exprs) :stream nil)])
+  [editor (pprint/write @exprs :stream nil :level 3)])
 
 (defn about-page []
   [:div [:h2 "About parenity"]

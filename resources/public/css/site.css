@@ -1,8 +1,29 @@
 @import url("mui.css");
 @import url("Semantic-UI-CSS/semantic.css");
 
+@import url('https://fonts.googleapis.com/css?family=Source+Code+Pro');
+
 body {
   padding: 10px;
+}
+
+.line {
+  display: flex;
+  font-family: DejaVu Sans Mono, monospace;
+  cursor: default;
+}
+
+.tile {
+  line-height: 30px;
+  font-size: 20px;
+}
+
+.tile:hover {
+  background: cyan;
+}
+
+.space {
+  visibility: hidden;
 }
 
 .s-expr {
