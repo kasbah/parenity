@@ -8,18 +8,28 @@
 
 (def exprs
   (atom
-    '(label equal (lambda (x y) (cond))
-        ((atom x) (cond ((atom y) (eq x y)) ((quote t) (quote f))))
-        ((equal (car x) (car y)) (equal (cdr x) (cdr y)))
-        ((quote t)(quote f)))))
+   '(defn tokenize [text]
+     (reverse
+       (reduce
+         (fn [accum c]
+           (let [s (str c)]
+             (case s
+               (")" "(" " ") (cons s accum)
+               (let [prev (first accum)]
+                 (case prev
+                   (")" "(" " ") (cons s accum)
+                   (cons (string/join [prev s])(rest accum)))))))
+         '()
+         text)))))
 
 ;; -------------------------
 ;; Views
 
 
 (defn tile [c]
-  (if (= c " ")
-    [:span.tile.space "_"]
+  (case c
+    (" ") [:span.tile.space "_"]
+    (")") [:span.tile.closing ")"]
     [:span.tile c]))
 
 (defn atm [i text]
@@ -43,10 +53,10 @@
       (fn [accum c]
         (let [s (str c)]
           (case s
-            (")" "(" " ") (cons s accum)
+            ("]" "[" "{" "}" ")" "(" " ") (cons s accum)
             (let [prev (first accum)]
               (case prev
-                (")" "(" " ") (cons s accum)
+                ("]" "[" "{" "}" ")" "(" " ") (cons s accum)
                 (cons (string/join [prev s])(rest accum)))))))
       '()
       text)))
@@ -67,7 +77,7 @@
 
 
 (defn home-page []
-  [editor (pprint/write @exprs :stream nil :level 3)])
+  [editor (pprint/write @exprs :stream nil :level nil)])
 
 (defn about-page []
   [:div [:h2 "About parenity"]

@@ -13,6 +13,10 @@ body {
   cursor: default;
 }
 
+.closing:hover {
+  padding-left: 20px;
+}
+
 .tile {
   line-height: 30px;
   font-size: 20px;
