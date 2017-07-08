@@ -51,13 +51,16 @@
   (reverse
     (reduce
       (fn [accum c]
-        (let [s (str c)]
+        (let [s (str c)
+              prev (first accum)
+              join (cons (string/join [prev s]) (rest accum))
+              create (cons s accum)]
           (case s
-            ("]" "[" "{" "}" ")" "(" " ") (cons s accum)
-            (let [prev (first accum)]
-              (case prev
-                ("]" "[" "{" "}" ")" "(" " ") (cons s accum)
-                (cons (string/join [prev s])(rest accum)))))))
+            ("]" "[" "{" "}" ")" "(" " ") create
+            (case prev
+              ("]" "[" "{" "}" ")" "(" " ") create
+              join))))
+
       '()
       text)))
 
