@@ -82,17 +82,17 @@
                         :output-dir "target/cljsbuild/public/js/devcards_out"
                         :source-map-timestamp true
                         :optimizations :none
-                        :pretty-print true}}
-            }
-   }
+                        :pretty-print true}}}}
+
+
 
 
   :figwheel
   {:http-server-root "public"
    :server-port 3449
    :nrepl-port 7002
-   :nrepl-middleware ["cemerick.piggieback/wrap-cljs-repl"
-                      ]
+   :nrepl-middleware ["cemerick.piggieback/wrap-cljs-repl"]
+
    :css-dirs ["resources/public/css"]
    :ring-handler parenity.handler/app}
 
@@ -109,13 +109,13 @@
                                   [org.clojure/tools.nrepl "0.2.13"]
                                   [com.cemerick/piggieback "0.2.2"]
                                   [devcards "0.2.3" :exclusions [cljsjs/react]]
-                                  [pjstadig/humane-test-output "0.8.2"]
-                                  ]
+                                  [pjstadig/humane-test-output "0.8.2"]]
+
 
                    :source-paths ["env/dev/clj"]
                    :plugins [[lein-figwheel "0.5.11"]
-                             [lein-doo "0.1.6"]
-                             ]
+                             [lein-doo "0.1.6"]]
+
 
                    :injections [(require 'pjstadig.humane-test-output)
                                 (pjstadig.humane-test-output/activate!)]

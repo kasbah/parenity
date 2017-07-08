@@ -8,19 +8,32 @@
 
 (def exprs
   (atom
-   '(defn tokenize [text]
-     (reverse
-       (reduce
-         (fn [accum c]
-           (let [s (str c)]
-             (case s
-               (")" "(" " ") (cons s accum)
-               (let [prev (first accum)]
-                 (case prev
-                   (")" "(" " ") (cons s accum)
-                   (cons (string/join [prev s])(rest accum)))))))
-         '()
-         text)))))
+    '(defn tokenize [text]
+      (reverse
+        (first
+          (reduce
+            (fn [accum c]
+              (let [s (str c)
+                    quoted (= (second accum) :quoted)
+                    escaped (= (nth accum 2) :escaped)
+                    prev (first (first accum))
+                    join (cons (string/join [prev s]) (rest (first accum)))
+                    create (cons s (first accum))]
+                (cond
+                  (and quoted escaped) [join :quoted :unescaped]
+                  quoted (case s
+                           ("\"") [join :unquoted :unescaped]
+                           ("\\") [join :quoted :escaped]
+                           [join :quoted :unescaped])
+                  :else
+                    (case s
+                      ("\"") [create :quoted :unescaped]
+                      ("]" "[" "{" "}" ")" "(" " ") [create :unquoted :unescaped]
+                      (case prev
+                        ("]" "[" "{" "}" ")" "(" " " "\"") [create :unquoted :unescaped]
+                        [join :unquoted :unescaped])))))
+            [[] :unquoted :unescaped]
+            text))))))
 
 ;; -------------------------
 ;; Views
@@ -29,7 +42,7 @@
 (defn tile [c]
   (case c
     (" ") [:span.tile.space "_"]
-    (")") [:span.tile.closing ")"]
+    (")" "]" "}") [:span.tile.closing c]
     [:span.tile c]))
 
 (defn atm [i text]
@@ -49,20 +62,30 @@
 
 (defn tokenize [text]
   (reverse
-    (reduce
-      (fn [accum c]
-        (let [s (str c)
-              prev (first accum)
-              join (cons (string/join [prev s]) (rest accum))
-              create (cons s accum)]
-          (case s
-            ("]" "[" "{" "}" ")" "(" " ") create
-            (case prev
-              ("]" "[" "{" "}" ")" "(" " ") create
-              join))))
-
-      '()
-      text)))
+    (first
+      (reduce
+        (fn [accum c]
+          (let [s (str c)
+                quoted (= (second accum) :quoted)
+                escaped (= (nth accum 2) :escaped)
+                prev (first (first accum))
+                join (cons (string/join [prev s]) (rest (first accum)))
+                create (cons s (first accum))]
+            (cond
+              (and quoted escaped) [join :quoted :unescaped]
+              quoted (case s
+                       ("\"") [join :unquoted :unescaped]
+                       ("\\") [join :quoted :escaped]
+                       [join :quoted :unescaped])
+              :else
+                (case s
+                  ("\"") [create :quoted :unescaped]
+                  ("]" "[" "{" "}" ")" "(" " ") [create :unquoted :unescaped]
+                  (case prev
+                    ("]" "[" "{" "}" ")" "(" " " "\"") [create :unquoted :unescaped]
+                    [join :unquoted :unescaped])))))
+        [[] :unquoted :unescaped]
+        text))))
 
 (defn line [text]
   [:div.line
