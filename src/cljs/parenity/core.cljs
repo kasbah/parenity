@@ -2,9 +2,9 @@
     (:require [reagent.core :as reagent :refer [atom]]
               [secretary.core :as secretary :include-macros true]
               [accountant.core :as accountant]
-              [clojure.pprint :as pprint]
               [clojure.string :as string]
-              [clojure.core.reducers :as reducers]))
+              [clojure.core.reducers :as reducers]
+              [fipp.clojure :refer [pprint]]))
 
 (def exprs
   (atom
@@ -74,15 +74,16 @@
             (cond
               (and quoted escaped) [join :quoted :unescaped]
               quoted (case s
-                       ("\"") [join :unquoted :unescaped]
-                       ("\\") [join :quoted :escaped]
+                       "\"" [join :unquoted :unescaped]
+                       "\\" [join :quoted :escaped]
                        [join :quoted :unescaped])
               :else
                 (case s
-                  ("\"") [create :quoted :unescaped]
+                  "\"" [create :quoted :unescaped]
                   ("]" "[" "{" "}" ")" "(" " ") [create :unquoted :unescaped]
                   (case prev
-                    ("]" "[" "{" "}" ")" "(" " " "\"") [create :unquoted :unescaped]
+                    ("]" "[" "{" "}" ")" "(" " " "\"")
+                    [create :unquoted :unescaped]
                     [join :unquoted :unescaped])))))
         [[] :unquoted :unescaped]
         text))))
@@ -103,7 +104,7 @@
 
 
 (defn home-page []
-  [editor (pprint/write @exprs :stream nil :level nil)])
+  [editor (with-out-str (pprint @exprs {:width 80}))])
 
 (defn about-page []
   [:div [:h2 "About parenity"]
