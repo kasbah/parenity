@@ -15,24 +15,26 @@
             (fn [accum c]
               (let [s (str c)
                     quoted (= (second accum) :quoted)
-                    escaped (= (nth accum 2) :escaped)
-                    prev (first (first accum))
-                    join (cons (string/join [prev s]) (rest (first accum)))
-                    create (cons s (first accum))]
+                    escaped (= (nth accum 2 nil) :escaped)
+                    result (first accum)
+                    prev (first result)
+                    append-to-prev (conj (rest result) (string/join [prev s]))
+                    create (conj result s)]
                 (cond
-                  (and quoted escaped) [join :quoted :unescaped]
+                  (and quoted escaped) [append-to-prev :quoted nil]
                   quoted (case s
-                           ("\"") [join :unquoted :unescaped]
-                           ("\\") [join :quoted :escaped]
-                           [join :quoted :unescaped])
+                           "\"" [append-to-prev nil]
+                           "\\" [append-to-prev :quoted :escaped]
+                           [append-to-prev :quoted])
                   :else
                     (case s
-                      ("\"") [create :quoted :unescaped]
-                      ("]" "[" "{" "}" ")" "(" " ") [create :unquoted :unescaped]
+                      "\"" [create :quoted]
+                      ("]" "[" "{" "}" ")" "(" " ") [create]
                       (case prev
-                        ("]" "[" "{" "}" ")" "(" " " "\"") [create :unquoted :unescaped]
-                        [join :unquoted :unescaped])))))
-            [[] :unquoted :unescaped]
+                        ("]" "[" "{" "}" ")" "(" " " "\"")
+                        [create]
+                        [append-to-prev])))))
+            ['() nil nil]
             text))))))
 
 ;; -------------------------
@@ -70,8 +72,8 @@
                 escaped (= (nth accum 2 nil) :escaped)
                 result (first accum)
                 prev (first result)
-                append-to-prev (cons (string/join [prev s]) (rest result))
-                create (cons s result)]
+                append-to-prev (conj (rest result) (string/join [prev s]))
+                create (conj result s)]
             (cond
               (and quoted escaped) [append-to-prev :quoted nil]
               quoted (case s
@@ -86,7 +88,7 @@
                     ("]" "[" "{" "}" ")" "(" " " "\"")
                     [create]
                     [append-to-prev])))))
-        [[] nil nil]
+        ['() nil nil]
         text))))
 
 (defn line [text]
