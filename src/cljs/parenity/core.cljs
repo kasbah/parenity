@@ -4,7 +4,8 @@
               [accountant.core :as accountant]
               [clojure.string :as string]
               [clojure.core.reducers :as reducers]
-              [fipp.clojure :refer [pprint]]))
+              [fipp.clojure :refer [pprint]]
+              [puget :as puget]))
 
 (def exprs
   (atom
@@ -107,7 +108,7 @@
 
 
 (defn home-page []
-  [editor (with-out-str (pprint @exprs {:width 80}))])
+  [editor (with-out-str (puget/pprint @exprs {:width 80}))])
 
 (defn about-page []
   [:div [:h2 "About parenity"]

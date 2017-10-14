@@ -15,6 +15,7 @@
                  [yogthos/config "0.8"]
                  [org.clojure/clojurescript "1.9.671"
                   :scope "provided"]
+                 [mvxcvi/puget "1.0.1"]
                  [secretary "1.2.3"]
                  [fipp "0.6.8"]
                  [venantius/accountant "0.2.0"
